@@ -1,0 +1,206 @@
+import { NavLink, useNavigate } from "react-router";
+import {
+  LayoutDashboard,
+  CalendarDays,
+  PlusCircle,
+  Users,
+  ClipboardList,
+  Heart,
+  ShieldAlert,
+  BarChart3,
+  Settings,
+  QrCode,
+  CreditCard,
+  BookOpen,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  CheckSquare,
+  UserCheck,
+} from "lucide-react";
+import { useApp } from "../../context/AppContext";
+import { useState } from "react";
+
+interface NavItem {
+  label: string;
+  path: string;
+  icon: React.ReactNode;
+  roles: string[];
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Calendario", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
+  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz", "general"] },
+  { label: "Mi Carnet", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },
+  { label: "Escanear QR", path: "/escanear-qr", icon: <QrCode size={18} />, roles: ["aprendiz"] },
+  { label: "Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
+  { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
+  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },
+  { label: "Ruta PAEDP", path: "/paedp", icon: <ShieldAlert size={18} />, roles: ["admin", "organizador"] },
+  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
+  { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
+  { label: "Mis Aprendices", path: "/aprendices", icon: <Users size={18} />, roles: [] }, // Deduped
+  { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
+];
+
+// Deduplicated and ordered nav
+const DEDUPLICATED_NAV: NavItem[] = [
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Calendario de Eventos", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
+  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz", "general"] },
+  { label: "Mi Carnet Digital", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },
+  { label: "Escanear QR", path: "/escanear-qr", icon: <QrCode size={18} />, roles: ["aprendiz"] },
+  { label: "Control Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
+  { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
+  { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
+  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },
+  { label: "Ruta PAEDP", path: "/paedp", icon: <ShieldAlert size={18} />, roles: ["admin", "organizador"] },
+  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
+  { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
+  { label: "Configuración", path: "/configuracion", icon: <Settings size={18} />, roles: ["admin"] },
+];
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrador",
+  organizador: "Organizador",
+  instructor: "Instructor",
+  aprendiz: "Aprendiz",
+  general: "Usuario General",
+};
+
+const ROLE_COLORS: Record<string, string> = {
+  admin: "bg-[#d4183d]",
+  organizador: "bg-[#007AC0]",
+  instructor: "bg-[#7c3aed]",
+  aprendiz: "bg-[#39A900]",
+  general: "bg-[#f59e0b]",
+};
+
+export function Sidebar() {
+  const { currentUser, logout, switchRole } = useApp();
+  const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const visibleNav = DEDUPLICATED_NAV.filter(
+    (item) => currentUser && item.roles.includes(currentUser.role)
+  );
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
+    <aside
+      className={`relative flex flex-col h-full bg-[#1C2B1A] text-white transition-all duration-300 ${
+        collapsed ? "w-16" : "w-64"
+      }`}
+    >
+      {/* Toggle button */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-20 z-10 bg-[#39A900] text-white rounded-full p-1 shadow-lg hover:bg-[#2d8a00] transition-colors"
+      >
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
+
+      {/* Logo */}
+      <div className={`flex items-center gap-3 p-4 border-b border-white/10 ${collapsed ? "justify-center" : ""}`}>
+        <div className="flex-shrink-0 w-9 h-9 bg-[#39A900] rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-sm">EBA</span>
+        </div>
+        {!collapsed && (
+          <div>
+            <div className="text-white font-semibold text-sm leading-tight">EBA</div>
+            <div className="text-white/60 text-xs leading-tight">SENA Quindío</div>
+          </div>
+        )}
+      </div>
+
+      {/* User info */}
+      {currentUser && (
+        <div className={`p-3 border-b border-white/10 ${collapsed ? "flex justify-center" : ""}`}>
+          {!collapsed ? (
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 ${ROLE_COLORS[currentUser.role]}`}>
+                {currentUser.nombre[0]}{currentUser.apellido[0]}
+              </div>
+              <div className="min-w-0">
+                <div className="text-white text-sm font-medium truncate">
+                  {currentUser.nombre} {currentUser.apellido}
+                </div>
+                <span className={`inline-block text-white text-xs px-2 py-0.5 rounded-full mt-0.5 ${ROLE_COLORS[currentUser.role]}`}>
+                  {ROLE_LABELS[currentUser.role]}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${ROLE_COLORS[currentUser.role]}`}>
+              {currentUser.nombre[0]}{currentUser.apellido[0]}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2">
+        {visibleNav.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-150 group
+              ${isActive
+                ? "bg-[#39A900] text-white"
+                : "text-white/70 hover:bg-white/10 hover:text-white"
+              }
+              ${collapsed ? "justify-center" : ""}
+              `
+            }
+            title={collapsed ? item.label : undefined}
+          >
+            <span className="flex-shrink-0">{item.icon}</span>
+            {!collapsed && <span className="text-sm truncate">{item.label}</span>}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Demo role switcher */}
+      {!collapsed && (
+        <div className="p-3 border-t border-white/10">
+          <p className="text-white/40 text-xs mb-2 px-1">Demo - Cambiar rol:</p>
+          <div className="grid grid-cols-2 gap-1">
+            {(["admin", "organizador", "instructor", "aprendiz"] as const).map((role) => (
+              <button
+                key={role}
+                onClick={() => switchRole(role)}
+                className={`text-xs px-2 py-1 rounded text-white transition-colors capitalize ${
+                  currentUser?.role === role
+                    ? ROLE_COLORS[role]
+                    : "bg-white/10 hover:bg-white/20"
+                }`}
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Logout */}
+      <div className={`p-3 border-t border-white/10 ${collapsed ? "flex justify-center" : ""}`}>
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-3 text-white/70 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 transition-colors w-full ${collapsed ? "justify-center" : ""}`}
+          title={collapsed ? "Cerrar sesión" : undefined}
+        >
+          <LogOut size={18} />
+          {!collapsed && <span className="text-sm">Cerrar sesión</span>}
+        </button>
+      </div>
+    </aside>
+  );
+}
