@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EVENTOS, INSCRIPCIONES, CASOS_BIENESTAR } from "../data/mockData";
+import { EVENTOS, INSCRIPCIONES, CASOS_BIENESTAR } from "../data/domain";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend
@@ -41,7 +41,7 @@ const TIPO_BIENESTAR_DATA = [
   { tipo: "Salud", value: 2, color: "#d4183d" },
 ];
 
-type ReportType = "eventos" | "asistencia" | "bienestar" | "paedp";
+type ReportType = "eventos" | "asistencia" | "bienestar" | "Seguimiento";
 
 export default function Reportes() {
   const [activeReport, setActiveReport] = useState<ReportType>("eventos");
@@ -51,7 +51,7 @@ export default function Reportes() {
     { key: "eventos" as ReportType, label: "Eventos", icon: <CalendarDays size={15} /> },
     { key: "asistencia" as ReportType, label: "Asistencia", icon: <TrendingUp size={15} /> },
     { key: "bienestar" as ReportType, label: "Bienestar", icon: <BarChart3 size={15} /> },
-    { key: "paedp" as ReportType, label: "PAEDP", icon: <PieIcon size={15} /> },
+    { key: "Seguimiento" as ReportType, label: "Seguimiento", icon: <PieIcon size={15} /> },
   ];
 
   return (
@@ -264,8 +264,8 @@ export default function Reportes() {
             </div>
           )}
 
-          {/* PAEDP */}
-          {activeReport === "paedp" && (
+          {/* Seguimiento */}
+          {activeReport === "Seguimiento" && (
             <div className="space-y-6">
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
@@ -305,8 +305,8 @@ export default function Reportes() {
               <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4 flex gap-3">
                 <span className="text-2xl">⚠️</span>
                 <div>
-                  <div className="text-yellow-800 font-medium text-sm">Nota sobre el módulo PAEDP</div>
-                  <p className="text-yellow-700 text-xs mt-1">Los reportes de casos PAEDP son de carácter confidencial y solo deben ser consultados por personal autorizado del equipo de bienestar y coordinación del Centro.</p>
+                  <div className="text-yellow-800 font-medium text-sm">Nota sobre el módulo Seguimiento</div>
+                  <p className="text-yellow-700 text-xs mt-1">Los reportes de casos Seguimiento son de carácter confidencial y solo deben ser consultados por personal autorizado del equipo de bienestar y coordinación del Centro.</p>
                 </div>
               </div>
             </div>

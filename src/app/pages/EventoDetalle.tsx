@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router";
-import { EVENTOS, INSCRIPCIONES, CATEGORIAS_LABELS, ESTADO_EVENTO_LABELS, USERS } from "../data/mockData";
+import { EVENTOS, INSCRIPCIONES, CATEGORIAS_LABELS, ESTADO_EVENTO_LABELS, USERS } from "../data/domain";
 import { useApp } from "../context/AppContext";
 import { useState } from "react";
 import {
@@ -17,9 +17,9 @@ const CATEGORIA_COLORS: Record<string, string> = {
 
 const ESTADO_COLORS: Record<string, string> = {
   pendiente: "bg-yellow-100 text-yellow-700",
-  aprobado: "bg-green-100 text-green-700",
-  rechazado: "bg-red-100 text-red-600",
-  finalizado: "bg-gray-100 text-gray-600",
+  iniciado: "bg-green-100 text-green-700",
+  cancelado: "bg-red-100 text-red-600",
+  terminado: "bg-gray-100 text-gray-600",
 };
 
 export default function EventoDetalle() {
@@ -50,7 +50,7 @@ export default function EventoDetalle() {
 
   const canApprove = currentUser?.role === "admin";
   const canManage = currentUser?.role === "admin" || currentUser?.role === "organizador";
-  const canInscribe = (currentUser?.role === "aprendiz" || currentUser?.role === "general") && evento.estado === "aprobado";
+  const canInscribe = (currentUser?.role === "aprendiz" ) && evento.estado === "iniciado";
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -189,11 +189,11 @@ export default function EventoDetalle() {
             </button>
           </div>
 
-          {/* QR Code mock */}
+          {/* QR Code */}
           {showQR && (
             <div className="mt-4 p-6 bg-gray-50 rounded-xl flex flex-col items-center gap-3">
               <div className="w-48 h-48 bg-white border-2 border-[#39A900] rounded-xl p-4 flex items-center justify-center">
-                {/* QR SVG mock */}
+                {/* QR SVG */}
                 <svg width="160" height="160" viewBox="0 0 100 100" className="opacity-90">
                   <rect x="10" y="10" width="30" height="30" rx="3" fill="none" stroke="#1C2B1A" strokeWidth="3"/>
                   <rect x="15" y="15" width="20" height="20" rx="1" fill="#1C2B1A"/>

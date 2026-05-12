@@ -1,45 +1,48 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { User, USERS, Role } from "../data/mockData";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { User } from "../data/domain";
+import { authApi } from "../services/api";
 
 interface AppContextType {
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
-  login: (email: string, role?: Role) => boolean;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
-  switchRole: (role: Role) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const DEMO_USERS: Record<Role, User> = {
-  admin: USERS[0],
-  organizador: USERS[1],
-  instructor: USERS[2],
-  aprendiz: USERS[3],
-  general: USERS[4],
-};
-
 export function AppProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  const login = (email: string, role?: Role): boolean => {
-    if (role) {
-      setCurrentUser(DEMO_USERS[role]);
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    authApi.me()
+      .then(setCurrentUser)
+      .catch(() => {
+        localStorage.removeItem("auth_token");
+        setCurrentUser(null);
+      });
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await authApi.login(email, password);
+      localStorage.setItem("auth_token", response.token);
+      setCurrentUser(response.user);
       return true;
+    } catch {
+      setCurrentUser(null);
+      localStorage.removeItem("auth_token");
+      return false;
     }
-    const user = USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (user) {
-      setCurrentUser(user);
-      return true;
-    }
-    return false;
   };
 
-  const logout = () => setCurrentUser(null);
-
-  const switchRole = (role: Role) => {
-    setCurrentUser(DEMO_USERS[role]);
+  const logout = () => {
+    localStorage.removeItem("auth_token");
+    setCurrentUser(null);
   };
 
   return (
@@ -50,7 +53,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         isAuthenticated: !!currentUser,
-        switchRole,
       }}
     >
       {children}

@@ -1,20 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router";
 import { useApp } from "../context/AppContext";
-import { Role } from "../data/mockData";
 import { Eye, EyeOff, ChevronRight, Shield, Star, Users, Heart } from "lucide-react";
-
-const DEMO_ROLES: { role: Role; label: string; email: string; color: string; desc: string }[] = [
-  { role: "admin", label: "Administrador", email: "admin@sena.edu.co", color: "bg-[#d4183d]", desc: "Gestión global y aprobaciones" },
-  { role: "organizador", label: "Organizador", email: "organizador@sena.edu.co", color: "bg-[#007AC0]", desc: "Crear y gestionar eventos" },
-  { role: "instructor", label: "Instructor", email: "instructor@sena.edu.co", color: "bg-[#7c3aed]", desc: "Asistencia y aprendices" },
-  { role: "aprendiz", label: "Aprendiz", email: "aprendiz@sena.edu.co", color: "bg-[#39A900]", desc: "Inscripciones y carnet" },
-];
 
 export default function Login() {
   const { login, isAuthenticated } = useApp();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [documento, setDocumento] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
@@ -26,20 +18,15 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    const ok = login(email);
+    const ok = await login(documento, password);
     if (ok) {
       navigate("/dashboard");
     } else {
-      setError("Credenciales incorrectas. Usa un correo de demostración.");
+      setError("Credenciales incorrectas o servicio no disponible.");
     }
     setLoading(false);
   };
 
-  const handleDemoLogin = (role: Role) => {
-    login("", role);
-    navigate("/dashboard");
-  };
 
   return (
     <div className="min-h-screen flex">
@@ -76,7 +63,7 @@ export default function Login() {
               { icon: <Star size={20} />, label: "Gestión de Eventos", desc: "Crea y administra eventos institucionales" },
               { icon: <Users size={20} />, label: "Control de Asistencia", desc: "Registro por QR o llamado de lista" },
               { icon: <Heart size={20} />, label: "Bienestar Integral", desc: "Seguimiento psicológico y social" },
-              { icon: <Shield size={20} />, label: "Ruta PAEDP", desc: "Atención con enfoque diferencial" },
+              { icon: <Shield size={20} />, label: "Seguimiento", desc: "Atención con enfoque diferencial" },
             ].map((f) => (
               <div key={f.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
                 <div className="text-[#7dd956] mb-2">{f.icon}</div>
@@ -108,17 +95,17 @@ export default function Login() {
 
           <div className="mb-8">
             <h2 className="text-gray-900 font-bold mb-2">Iniciar sesión</h2>
-            <p className="text-gray-500 text-sm">Ingresa con tus credenciales institucionales del SENA</p>
+            <p className="text-gray-500 text-sm">Ingresa con tu documento y contraseÃ±a</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 mb-8">
             <div>
-              <label className="block text-gray-700 text-sm mb-1.5">Correo institucional</label>
+              <label className="block text-gray-700 text-sm mb-1.5">Documento</label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu.nombre@sena.edu.co"
+                type="text"
+                value={documento}
+                onChange={(e) => setDocumento(e.target.value)}
+                placeholder="1000000001"
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#39A900]/30 focus:border-[#39A900] bg-gray-50 transition-all"
               />
             </div>
@@ -165,32 +152,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Demo access */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 border-t border-gray-200"></div>
-              <span className="text-gray-400 text-xs px-2">Acceso de demostración</span>
-              <div className="flex-1 border-t border-gray-200"></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_ROLES.map((dr) => (
-                <button
-                  key={dr.role}
-                  onClick={() => handleDemoLogin(dr.role)}
-                  className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-[#39A900] hover:bg-[#f0f9e8] transition-all group text-left"
-                >
-                  <div className={`w-8 h-8 ${dr.color} rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
-                    {dr.label[0]}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-gray-800 text-xs font-medium">{dr.label}</div>
-                    <div className="text-gray-400 text-xs truncate">{dr.desc}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="text-gray-400 text-xs text-center">La autenticacion se valida contra el backend configurado en VITE_API_BASE_URL.</p>
         </div>
       </div>
     </div>

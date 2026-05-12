@@ -71,7 +71,7 @@ export default function Configuracion() {
                 "Aprobación/Rechazo de Eventos",
                 "Nuevas inscripciones a eventos",
                 "Apertura de Casos de Bienestar",
-                "Actualizaciones de Casos PAEDP",
+                "Actualizaciones de Casos Seguimiento",
                 "Reportes mensuales automáticos"
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">

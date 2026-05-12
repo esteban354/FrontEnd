@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { EVENTOS, CATEGORIAS_LABELS, ESTADO_EVENTO_LABELS } from "../data/mockData";
+import { CATEGORIAS_LABELS, ESTADO_EVENTO_LABELS, Evento, LOCACIONES_EVENTO_LABELS } from "../data/domain";
 import { useApp } from "../context/AppContext";
+import { eventosApi } from "../services/api";
 import {
   CalendarDays, List, MapPin, Clock, Users, Filter, Search, PlusCircle, ArrowRight, Tag
 } from "lucide-react";
@@ -18,9 +19,9 @@ const CATEGORIA_COLORS: Record<string, string> = {
 
 const ESTADO_COLORS: Record<string, string> = {
   pendiente: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  aprobado: "bg-green-100 text-green-700 border-green-200",
-  rechazado: "bg-red-100 text-red-600 border-red-200",
-  finalizado: "bg-gray-100 text-gray-600 border-gray-200",
+  iniciado: "bg-green-100 text-green-700 border-green-200",
+  cancelado: "bg-red-100 text-red-600 border-red-200",
+  terminado: "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 export default function Eventos() {
@@ -30,12 +31,22 @@ export default function Eventos() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("todos");
   const [estadoFilter, setEstadoFilter] = useState("todos");
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const canCreate = currentUser?.role === "admin" || currentUser?.role === "organizador";
 
-  const filtered = EVENTOS.filter((ev) => {
+  useEffect(() => {
+    eventosApi.findAll()
+      .then(setEventos)
+      .catch(() => setError("No se pudieron cargar los eventos. Verifica que el backend este en ejecucion."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = eventos.filter((ev) => {
     const matchSearch = ev.titulo.toLowerCase().includes(search.toLowerCase()) ||
-      ev.lugar.toLowerCase().includes(search.toLowerCase());
+      LOCACIONES_EVENTO_LABELS[ev.lugar].toLowerCase().includes(search.toLowerCase());
     const matchCat = catFilter === "todos" || ev.categoria === catFilter;
     const matchEstado = estadoFilter === "todos" || ev.estado === estadoFilter;
     return matchSearch && matchCat && matchEstado;
@@ -43,6 +54,8 @@ export default function Eventos() {
 
   return (
     <div className="space-y-6">
+      {loading && <div className="bg-white rounded-xl border border-gray-100 p-5 text-gray-500 text-sm">Cargando eventos...</div>}
+      {error && <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">{error}</div>}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-1">
@@ -175,7 +188,7 @@ export default function Eventos() {
                   </div>
                   <div className="flex items-center gap-2 text-gray-500 text-xs">
                     <MapPin size={13} className="text-[#007AC0] flex-shrink-0" />
-                    <span className="truncate">{ev.lugar}</span>
+                    <span className="truncate">{LOCACIONES_EVENTO_LABELS[ev.lugar]}</span>
                   </div>
                 </div>
 
@@ -222,7 +235,7 @@ export default function Eventos() {
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                     <MapPin size={12} className="text-[#007AC0]" />
-                    <span>{ev.lugar}</span>
+                    <span>{LOCACIONES_EVENTO_LABELS[ev.lugar]}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                     <Users size={12} />

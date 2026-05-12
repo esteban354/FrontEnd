@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router";
-import { CASOS_BIENESTAR, TIPO_BIENESTAR_LABELS, ESTADO_BIENESTAR_LABELS, USERS } from "../data/mockData";
+import { CASOS_BIENESTAR, TIPO_BIENESTAR_LABELS, ESTADO_BIENESTAR_LABELS, USERS } from "../data/domain";
 import { useApp } from "../context/AppContext";
 import { useState } from "react";
 import {
@@ -18,7 +18,7 @@ const ESTADO_COLORS: Record<string, string> = {
   abierto: "bg-blue-100 text-blue-700",
   en_seguimiento: "bg-purple-100 text-purple-700",
   cerrado: "bg-gray-100 text-gray-600",
-  derivado_paedp: "bg-red-100 text-red-700",
+  derivado_Seguimiento: "bg-red-100 text-red-700",
 };
 
 const TIPO_COLORS: Record<string, string> = {
@@ -35,7 +35,7 @@ export default function BienestarDetalle() {
   const navigate = useNavigate();
   const { currentUser } = useApp();
   const [showAddSeguimiento, setShowAddSeguimiento] = useState(false);
-  const [showPAEDPModal, setShowPAEDPModal] = useState(false);
+  const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [newSeg, setNewSeg] = useState({ descripcion: "", accion: "", proxCita: "" });
 
   const caso = CASOS_BIENESTAR.find((c) => c.id === id);
@@ -77,9 +77,9 @@ export default function BienestarDetalle() {
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${PRIORIDAD_COLORS[caso.prioridad]}`}>
                 Prioridad {caso.prioridad}
               </span>
-              {caso.paedpActivado && (
+              {caso.SeguimientoActivado && (
                 <span className="text-xs px-2.5 py-1 rounded-full bg-red-50 text-red-600 font-medium flex items-center gap-1">
-                  <ShieldAlert size={11} /> Ruta PAEDP activada
+                  <ShieldAlert size={11} /> Seguimiento activada
                 </span>
               )}
             </div>
@@ -134,21 +134,21 @@ export default function BienestarDetalle() {
               <PlusCircle size={16} /> Agregar seguimiento
             </button>
 
-            {!caso.paedpActivado && caso.estado !== "cerrado" && (
+            {!caso.SeguimientoActivado && caso.estado !== "cerrado" && (
               <button
-                onClick={() => setShowPAEDPModal(true)}
+                onClick={() => setShowSeguimientoModal(true)}
                 className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm transition-colors"
               >
-                <ShieldAlert size={16} /> Activar Ruta PAEDP
+                <ShieldAlert size={16} /> Activar Seguimiento
               </button>
             )}
 
-            {caso.paedpActivado && (
+            {caso.SeguimientoActivado && (
               <button
-                onClick={() => navigate("/paedp")}
+                onClick={() => navigate("/bienestar")}
                 className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 px-4 py-2 rounded-xl text-sm transition-colors"
               >
-                <ShieldAlert size={16} /> Ver Ruta PAEDP
+                <ShieldAlert size={16} /> Ver Seguimiento
               </button>
             )}
 
@@ -267,30 +267,30 @@ export default function BienestarDetalle() {
         </div>
       )}
 
-      {/* PAEDP Activation Modal */}
-      {showPAEDPModal && (
+      {/* Seguimiento Activation Modal */}
+      {showSeguimientoModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <div>
                 <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                  <ShieldAlert size={18} className="text-red-500" /> Activar Ruta PAEDP
+                  <ShieldAlert size={18} className="text-red-500" /> Activar Seguimiento
                 </h3>
                 <p className="text-gray-500 text-sm mt-0.5">Atención con Enfoque Diferencial y Pluralista</p>
               </div>
-              <button onClick={() => setShowPAEDPModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <button onClick={() => setShowSeguimientoModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
             </div>
             <div className="p-6 space-y-4">
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3">
                 <AlertCircle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
                 <p className="text-red-700 text-sm">
-                  La activación de la ruta PAEDP implica la intervención del equipo interdisciplinario del Centro.
+                  La activación de la Seguimiento implica la intervención del equipo interdisciplinario del Centro.
                   Esta acción quedará registrada en el historial del aprendiz.
                 </p>
               </div>
               <div>
                 <label className="text-gray-700 text-sm block mb-1.5">Motivo de activación *</label>
-                <textarea rows={3} placeholder="Describe la razón por la cual se activa la ruta PAEDP..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 resize-none" />
+                <textarea rows={3} placeholder="Describe la razón por la cual se activa la Seguimiento..." className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 resize-none" />
               </div>
               <div>
                 <label className="text-gray-700 text-sm block mb-1.5">Enfoques diferenciales identificados</label>
@@ -305,9 +305,9 @@ export default function BienestarDetalle() {
               </div>
             </div>
             <div className="p-6 border-t border-gray-100 flex gap-3 justify-end">
-              <button onClick={() => setShowPAEDPModal(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-700 text-sm hover:bg-gray-50">Cancelar</button>
-              <button onClick={() => { setShowPAEDPModal(false); navigate("/paedp"); }} className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition-colors flex items-center gap-2">
-                <ShieldAlert size={16} /> Activar ruta PAEDP
+              <button onClick={() => setShowSeguimientoModal(false)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-700 text-sm hover:bg-gray-50">Cancelar</button>
+              <button onClick={() => { setShowSeguimientoModal(false); navigate("/bienestar"); }} className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm transition-colors flex items-center gap-2">
+                <ShieldAlert size={16} /> Activar Seguimiento
               </button>
             </div>
           </div>

@@ -1,9 +1,9 @@
 import { useApp } from "../context/AppContext";
-import { EVENTOS, CASOS_BIENESTAR, INSCRIPCIONES, APRENDICES_FICHA, CASOS_PAEDP } from "../data/mockData";
+import { EVENTOS, CASOS_BIENESTAR, INSCRIPCIONES, APRENDICES_FICHA } from "../data/domain";
 import { useNavigate } from "react-router";
 import {
   CalendarDays, Users, Heart, TrendingUp, CheckCircle2, Clock, AlertCircle,
-  ArrowRight, QrCode, CreditCard, BookOpen, ShieldAlert, BarChart3, PlusCircle
+  ArrowRight, QrCode, CreditCard, BookOpen, BarChart3, PlusCircle
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -59,10 +59,9 @@ export default function Dashboard() {
   const { currentUser } = useApp();
   const navigate = useNavigate();
 
-  const upcomingEvents = EVENTOS.filter(e => e.estado === "aprobado" || e.estado === "pendiente").slice(0, 3);
+  const upcomingEvents = EVENTOS.filter(e => e.estado === "iniciado" || e.estado === "pendiente").slice(0, 3);
   const pendingEvents = EVENTOS.filter(e => e.estado === "pendiente");
   const activeCases = CASOS_BIENESTAR.filter(c => c.estado !== "cerrado");
-  const paedpActive = CASOS_PAEDP.filter(p => p.estado !== "cerrado");
 
   const role = currentUser?.role;
 
@@ -76,9 +75,9 @@ export default function Dashboard() {
 
   const ESTADO_BADGE: Record<string, string> = {
     pendiente: "bg-yellow-100 text-yellow-700",
-    aprobado: "bg-green-100 text-green-700",
-    rechazado: "bg-red-100 text-red-700",
-    finalizado: "bg-gray-100 text-gray-600",
+    iniciado: "bg-green-100 text-green-700",
+    cancelado: "bg-red-100 text-red-700",
+    terminado: "bg-gray-100 text-gray-600",
   };
 
   // ─── ADMIN DASHBOARD ─────────────────────────────────────────────
@@ -94,9 +93,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard icon={<CalendarDays size={20} className="text-white" />} label="Total Eventos" value={EVENTOS.length} change="+3 este mes" color="bg-[#39A900]" onClick={() => navigate("/eventos")} />
           <StatCard icon={<Clock size={20} className="text-white" />} label="Pendientes Aprob." value={pendingEvents.length} color="bg-[#f59e0b]" onClick={() => navigate("/eventos")} />
-          <StatCard icon={<Heart size={20} className="text-white" />} label="Casos Bienestar" value={activeCases.length} change="activos" color="bg-[#d4183d]" onClick={() => navigate("/bienestar")} />
-          <StatCard icon={<ShieldAlert size={20} className="text-white" />} label="Rutas PAEDP" value={paedpActive.length} change="en proceso" color="bg-[#7c3aed]" onClick={() => navigate("/paedp")} />
-        </div>
+          <StatCard icon={<Heart size={20} className="text-white" />} label="Casos Bienestar" value={activeCases.length} change="activos" color="bg-[#d4183d]" onClick={() => navigate("/bienestar")} />        </div>
 
         {/* Charts */}
         <div className="grid lg:grid-cols-3 gap-6">
@@ -224,7 +221,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard icon={<CalendarDays size={20} className="text-white" />} label="Mis Eventos" value={myEvents.length} color="bg-[#007AC0]" />
           <StatCard icon={<Users size={20} className="text-white" />} label="Inscritos totales" value={myEvents.reduce((a, e) => a + e.inscritos, 0)} color="bg-[#39A900]" />
-          <StatCard icon={<CheckCircle2 size={20} className="text-white" />} label="Aprobados" value={myEvents.filter(e => e.estado === "aprobado").length} color="bg-[#7c3aed]" />
+          <StatCard icon={<CheckCircle2 size={20} className="text-white" />} label="iniciados" value={myEvents.filter(e => e.estado === "iniciado").length} color="bg-[#7c3aed]" />
           <StatCard icon={<Clock size={20} className="text-white" />} label="Pendientes" value={myEvents.filter(e => e.estado === "pendiente").length} color="bg-[#f59e0b]" />
         </div>
 
@@ -260,9 +257,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                  ev.estado === "aprobado" ? "bg-green-100 text-green-700" :
+                  ev.estado === "iniciado" ? "bg-green-100 text-green-700" :
                   ev.estado === "pendiente" ? "bg-yellow-100 text-yellow-700" :
-                  ev.estado === "finalizado" ? "bg-gray-100 text-gray-600" :
+                  ev.estado === "terminado" ? "bg-gray-100 text-gray-600" :
                   "bg-red-100 text-red-600"
                 }`}>{ev.estado}</span>
               </div>
@@ -363,9 +360,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Ver Eventos", icon: <CalendarDays size={22} />, path: "/eventos", color: "bg-[#007AC0]" },
-            { label: "Mi Carnet", icon: <CreditCard size={22} />, path: "/carnet", color: "bg-[#39A900]" },
-            { label: "Escanear QR", icon: <QrCode size={22} />, path: "/escanear-qr", color: "bg-[#7c3aed]" },
-            { label: "Mis Insc.", icon: <BookOpen size={22} />, path: "/inscripciones", color: "bg-[#f59e0b]" },
+            { label: "Mi Carnet", icon: <CreditCard size={22} />, path: "/carnet", color: "bg-[#39A900]" },            { label: "Mis Insc.", icon: <BookOpen size={22} />, path: "/inscripciones", color: "bg-[#f59e0b]" },
           ].map((a) => (
             <button key={a.label} onClick={() => navigate(a.path)} className={`${a.color} hover:opacity-90 text-white rounded-xl p-5 flex flex-col items-center gap-2 transition-opacity`}>
               {a.icon}
@@ -412,7 +407,7 @@ export default function Dashboard() {
     );
   }
 
-  // ─── GENERAL USER DASHBOARD ────────────────────────────────────────
+  // ─── USER DASHBOARD ────────────────────────────────────────
   return (
     <div className="space-y-6">
       <div>
@@ -421,14 +416,14 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <StatCard icon={<CalendarDays size={20} className="text-white" />} label="Eventos disponibles" value={EVENTOS.filter(e => e.estado === "aprobado").length} color="bg-[#39A900]" onClick={() => navigate("/eventos")} />
+        <StatCard icon={<CalendarDays size={20} className="text-white" />} label="Eventos disponibles" value={EVENTOS.filter(e => e.estado === "iniciado").length} color="bg-[#39A900]" onClick={() => navigate("/eventos")} />
         <StatCard icon={<Users size={20} className="text-white" />} label="Plazas disponibles" value={EVENTOS.reduce((a, e) => a + (e.capacidad - e.inscritos), 0)} color="bg-[#007AC0]" />
       </div>
 
       <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
         <h3 className="text-gray-800 font-semibold mb-4">Eventos próximos</h3>
         <div className="space-y-4">
-          {EVENTOS.filter(e => e.estado === "aprobado").map((ev) => (
+          {EVENTOS.filter(e => e.estado === "iniciado").map((ev) => (
             <div key={ev.id} onClick={() => navigate(`/eventos/${ev.id}`)} className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl cursor-pointer hover:border-[#39A900] hover:bg-[#f0f9e8] transition-all group">
               <img src={ev.imagen} alt={ev.titulo} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
               <div className="flex-1 min-w-0">

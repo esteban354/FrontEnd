@@ -6,10 +6,8 @@ import {
   Users,
   ClipboardList,
   Heart,
-  ShieldAlert,
   BarChart3,
   Settings,
-  QrCode,
   CreditCard,
   BookOpen,
   LogOut,
@@ -29,17 +27,13 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
-  { label: "Calendario", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
+  { label: "Calendario", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
   { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
-  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz", "general"] },
-  { label: "Mi Carnet", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },
-  { label: "Escanear QR", path: "/escanear-qr", icon: <QrCode size={18} />, roles: ["aprendiz"] },
-  { label: "Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
+  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz"] },
+  { label: "Mi Carnet", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },  { label: "Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
   { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
-  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },
-  { label: "Ruta PAEDP", path: "/paedp", icon: <ShieldAlert size={18} />, roles: ["admin", "organizador"] },
-  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
+  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
   { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
   { label: "Mis Aprendices", path: "/aprendices", icon: <Users size={18} />, roles: [] }, // Deduped
   { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
@@ -47,18 +41,14 @@ const NAV_ITEMS: NavItem[] = [
 
 // Deduplicated and ordered nav
 const DEDUPLICATED_NAV: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
-  { label: "Calendario de Eventos", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "general"] },
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
+  { label: "Calendario de Eventos", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
   { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
-  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz", "general"] },
-  { label: "Mi Carnet Digital", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },
-  { label: "Escanear QR", path: "/escanear-qr", icon: <QrCode size={18} />, roles: ["aprendiz"] },
-  { label: "Control Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
+  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz"] },
+  { label: "Mi Carnet Digital", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },  { label: "Control Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
   { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
   { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
-  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },
-  { label: "Ruta PAEDP", path: "/paedp", icon: <ShieldAlert size={18} />, roles: ["admin", "organizador"] },
-  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
+  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
   { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
   { label: "Configuración", path: "/configuracion", icon: <Settings size={18} />, roles: ["admin"] },
 ];
@@ -67,9 +57,7 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
   organizador: "Organizador",
   instructor: "Instructor",
-  aprendiz: "Aprendiz",
-  general: "Usuario General",
-};
+  aprendiz: "Aprendiz",};
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "bg-[#d4183d]",
@@ -80,7 +68,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 export function Sidebar() {
-  const { currentUser, logout, switchRole } = useApp();
+  const { currentUser, logout } = useApp();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -167,28 +155,6 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      {/* Demo role switcher */}
-      {!collapsed && (
-        <div className="p-3 border-t border-white/10">
-          <p className="text-white/40 text-xs mb-2 px-1">Demo - Cambiar rol:</p>
-          <div className="grid grid-cols-2 gap-1">
-            {(["admin", "organizador", "instructor", "aprendiz"] as const).map((role) => (
-              <button
-                key={role}
-                onClick={() => switchRole(role)}
-                className={`text-xs px-2 py-1 rounded text-white transition-colors capitalize ${
-                  currentUser?.role === role
-                    ? ROLE_COLORS[role]
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
-              >
-                {role}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Logout */}
       <div className={`p-3 border-t border-white/10 ${collapsed ? "flex justify-center" : ""}`}>

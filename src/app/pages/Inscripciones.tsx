@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { useApp } from "../context/AppContext";
-import { INSCRIPCIONES, EVENTOS } from "../data/mockData";
+import { INSCRIPCIONES, EVENTOS } from "../data/domain";
 import { CalendarDays, MapPin, CheckCircle2, XCircle, Clock, ArrowRight, BookOpen } from "lucide-react";
 
 const ESTADO_COLORS: Record<string, string> = {

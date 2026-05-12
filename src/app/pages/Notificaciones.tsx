@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Bell, Check, Trash2, CheckCircle2, Clock } from "lucide-react";
 
-// Mock de notificaciones más extenso
-const INITIAL_NOTIFICATIONS = [
-  { id: 1, type: "info", text: "Valentina Torres se inscribió en Feria de Emprendimiento", time: "Hace 5 minutos", unread: true },
-  { id: 2, type: "success", text: "Tu evento 'Hackathon 2025' ha sido aprobado", time: "Hace 2 horas", unread: true },
-  { id: 3, type: "warning", text: "Se ha abierto un nuevo caso de bienestar (Prioridad Alta)", time: "Hace 1 día", unread: false },
-  { id: 4, type: "info", text: "Tienes un nuevo mensaje en el seguimiento del caso CB-002", time: "Hace 2 días", unread: false },
-  { id: 5, type: "success", text: "Asistencia registrada exitosamente: 45 aprendices", time: "Hace 3 días", unread: false },
-];
+const INITIAL_NOTIFICATIONS: Array<{ id: number; type: string; text: string; time: string; unread: boolean }> = [];
 
 export default function Notificaciones() {
   const [notifs, setNotifs] = useState(INITIAL_NOTIFICATIONS);

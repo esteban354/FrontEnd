@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { APRENDICES_FICHA, CASOS_BIENESTAR, INSCRIPCIONES } from "../data/mockData";
+import { APRENDICES_FICHA, CASOS_BIENESTAR, INSCRIPCIONES } from "../data/domain";
 import { Search, Heart, CalendarDays, User, UserCheck, Filter } from "lucide-react";
 
 export default function Aprendices() {
@@ -77,7 +77,7 @@ export default function Aprendices() {
               {filtered.map((aprendiz) => {
                 const inscripciones = INSCRIPCIONES.filter(i => i.aprendizId === aprendiz.id);
                 const casosBienestar = CASOS_BIENESTAR.filter(c => c.aprendizId === aprendiz.id);
-                const tienePAEDP = casosBienestar.some(c => c.paedpActivado);
+                const tieneSeguimiento = casosBienestar.some(c => c.SeguimientoActivado);
                 const tieneAlert = casosBienestar.some(c => c.prioridad === "urgente" || c.prioridad === "alta");
 
                 return (
@@ -114,8 +114,8 @@ export default function Aprendices() {
                             <Heart size={11} /> Bienestar
                           </span>
                         )}
-                        {tienePAEDP && (
-                          <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">PAEDP</span>
+                        {tieneSeguimiento && (
+                          <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Seguimiento</span>
                         )}
                       </div>
                     </td>

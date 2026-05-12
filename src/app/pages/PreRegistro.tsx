@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { EVENTOS, APRENDICES_FICHA } from "../data/mockData";
+import { EVENTOS, APRENDICES_FICHA } from "../data/domain";
 import { ClipboardList, CheckCircle2, Users, PlusCircle, Search } from "lucide-react";
 
 export default function PreRegistro() {
-  const [selectedEvento, setSelectedEvento] = useState(EVENTOS[0].id);
+  const [selectedEvento, setSelectedEvento] = useState(EVENTOS[0]?.id ?? "");
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const upcoming = EVENTOS.filter(e => e.estado === "aprobado");
+  const upcoming = EVENTOS.filter(e => e.estado === "iniciado");
   const filtered = APRENDICES_FICHA.filter(a =>
     a.nombre.toLowerCase().includes(search.toLowerCase()) ||
     a.ficha.includes(search)

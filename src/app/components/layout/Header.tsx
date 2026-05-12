@@ -8,14 +8,10 @@ const PAGE_TITLES: Record<string, string> = {
   "/eventos": "Calendario de Eventos",
   "/eventos/crear": "Crear Evento",
   "/inscripciones": "Mis Inscripciones",
-  "/carnet": "Mi Carnet Digital",
-  "/escanear-qr": "Escanear QR",
-  "/asistencia": "Control de Asistencia",
+  "/carnet": "Mi Carnet Digital",  "/asistencia": "Control de Asistencia",
   "/aprendices": "Aprendices",
   "/pre-registro": "Pre-registro",
-  "/bienestar": "Bienestar al Aprendiz",
-  "/paedp": "Ruta PAEDP",
-  "/reportes": "Reportes y Estadísticas",
+  "/bienestar": "Bienestar al Aprendiz",  "/reportes": "Reportes y Estadísticas",
   "/admin": "Panel de Administración",
 };
 

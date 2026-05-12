@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { CASOS_BIENESTAR, TIPO_BIENESTAR_LABELS, ESTADO_BIENESTAR_LABELS, USERS } from "../data/mockData";
+import { CASOS_BIENESTAR, TIPO_BIENESTAR_LABELS, ESTADO_BIENESTAR_LABELS, USERS } from "../data/domain";
 import { useApp } from "../context/AppContext";
 import {
   Heart, Search, Filter, PlusCircle, ArrowRight, AlertCircle, Clock,
@@ -18,7 +18,7 @@ const ESTADO_COLORS: Record<string, string> = {
   abierto: "bg-blue-100 text-blue-700",
   en_seguimiento: "bg-purple-100 text-purple-700",
   cerrado: "bg-gray-100 text-gray-600",
-  derivado_paedp: "bg-red-100 text-red-700",
+  derivado_Seguimiento: "bg-red-100 text-red-700",
 };
 
 const TIPO_COLORS: Record<string, string> = {
@@ -67,7 +67,7 @@ export default function Bienestar() {
     total: casos.length,
     abiertos: casos.filter(c => c.estado === "abierto").length,
     seguimiento: casos.filter(c => c.estado === "en_seguimiento").length,
-    paedp: casos.filter(c => c.paedpActivado).length,
+    Seguimiento: casos.filter(c => c.SeguimientoActivado).length,
     cerrados: casos.filter(c => c.estado === "cerrado").length,
   };
 
@@ -80,7 +80,7 @@ export default function Bienestar() {
             { label: "Total casos", value: stats.total, color: "bg-[#007AC0]", text: "text-white" },
             { label: "Abiertos", value: stats.abiertos, color: "bg-blue-50", text: "text-blue-700", badge: "border border-blue-200" },
             { label: "En seguimiento", value: stats.seguimiento, color: "bg-purple-50", text: "text-purple-700", badge: "border border-purple-200" },
-            { label: "Activos PAEDP", value: stats.paedp, color: "bg-red-50", text: "text-red-700", badge: "border border-red-200" },
+            { label: "Activos Seguimiento", value: stats.Seguimiento, color: "bg-red-50", text: "text-red-700", badge: "border border-red-200" },
           ].map((s) => (
             <div key={s.label} className={`${s.color} ${s.badge || ""} rounded-xl p-4 flex items-center justify-between`}>
               <div>
@@ -172,9 +172,9 @@ export default function Bienestar() {
                       <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${PRIORIDAD_COLORS[caso.prioridad]}`}>
                         Prioridad: {caso.prioridad}
                       </span>
-                      {caso.paedpActivado && (
+                      {caso.SeguimientoActivado && (
                         <span className="text-xs px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 font-medium flex items-center gap-1">
-                          <ShieldAlert size={11} /> PAEDP
+                          <ShieldAlert size={11} /> Seguimiento
                         </span>
                       )}
                     </div>

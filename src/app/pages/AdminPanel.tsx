@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { USERS, EVENTOS, CASOS_BIENESTAR, CASOS_PAEDP } from "../data/mockData";
+import { USERS, EVENTOS, CASOS_BIENESTAR } from "../data/domain";
 import {
-  Users, CalendarDays, Heart, ShieldAlert, CheckCircle2, XCircle,
+  Users, CalendarDays, Heart, CheckCircle2, XCircle,
   Settings, PlusCircle, Search, Filter, Edit2, Trash2, Eye
 } from "lucide-react";
 
@@ -9,17 +9,13 @@ const ROLE_COLORS: Record<string, string> = {
   admin: "bg-red-100 text-red-600",
   organizador: "bg-blue-100 text-blue-700",
   instructor: "bg-purple-100 text-purple-700",
-  aprendiz: "bg-green-100 text-green-700",
-  general: "bg-yellow-100 text-yellow-700",
-};
+  aprendiz: "bg-green-100 text-green-700",};
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
   organizador: "Organizador",
   instructor: "Instructor",
-  aprendiz: "Aprendiz",
-  general: "General",
-};
+  aprendiz: "Aprendiz",};
 
 type Tab = "usuarios" | "eventos" | "bienestar" | "configuracion";
 
@@ -215,9 +211,9 @@ export default function AdminPanel() {
                     {EVENTOS.map(ev => {
                       const stateColors: Record<string, string> = {
                         pendiente: "bg-yellow-100 text-yellow-700",
-                        aprobado: "bg-green-100 text-green-700",
-                        rechazado: "bg-red-100 text-red-600",
-                        finalizado: "bg-gray-100 text-gray-600",
+                        iniciado: "bg-green-100 text-green-700",
+                        cancelado: "bg-red-100 text-red-600",
+                        terminado: "bg-gray-100 text-gray-600",
                       };
                       return (
                         <tr key={ev.id} className="hover:bg-gray-50 transition-colors">
@@ -254,9 +250,7 @@ export default function AdminPanel() {
                 {[
                   { label: "Total casos", value: CASOS_BIENESTAR.length, color: "text-[#007AC0]" },
                   { label: "Abiertos", value: CASOS_BIENESTAR.filter(c => c.estado === "abierto").length, color: "text-blue-600" },
-                  { label: "Seguimiento", value: CASOS_BIENESTAR.filter(c => c.estado === "en_seguimiento").length, color: "text-purple-600" },
-                  { label: "PAEDP", value: CASOS_BIENESTAR.filter(c => c.paedpActivado).length, color: "text-red-600" },
-                ].map(s => (
+                  { label: "Seguimiento", value: CASOS_BIENESTAR.filter(c => c.estado === "en_seguimiento").length, color: "text-purple-600" },                ].map(s => (
                   <div key={s.label} className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
                     <div className={`font-bold text-2xl ${s.color}`}>{s.value}</div>
                     <div className="text-gray-500 text-xs mt-1">{s.label}</div>
@@ -271,7 +265,7 @@ export default function AdminPanel() {
                     abierto: "bg-blue-100 text-blue-700",
                     en_seguimiento: "bg-purple-100 text-purple-700",
                     cerrado: "bg-gray-100 text-gray-600",
-                    derivado_paedp: "bg-red-100 text-red-700",
+                    derivado_Seguimiento: "bg-red-100 text-red-700",
                   };
                   const prioColors: Record<string, string> = {
                     urgente: "text-red-600", alta: "text-orange-600", media: "text-yellow-600", baja: "text-green-600",
@@ -311,9 +305,7 @@ export default function AdminPanel() {
                   { title: "Categorías de eventos", desc: "Gestiona los tipos de eventos disponibles", icon: "🏷️" },
                   { title: "Notificaciones", desc: "Configura alertas y recordatorios", icon: "🔔" },
                   { title: "Permisos y roles", desc: "Define los permisos por rol de usuario", icon: "🔐" },
-                  { title: "Plantillas de reportes", desc: "Personaliza los reportes de asistencia", icon: "📊" },
-                  { title: "Equipo PAEDP", desc: "Configura el equipo de atención diferencial", icon: "🛡️" },
-                ].map(c => (
+                  { title: "Plantillas de reportes", desc: "Personaliza los reportes de asistencia", icon: "📊" },                ].map(c => (
                   <div key={c.title} className="flex items-start gap-4 p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
                     <div className="text-2xl">{c.icon}</div>
                     <div className="flex-1">

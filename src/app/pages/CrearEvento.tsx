@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { LOCACIONES_EVENTO_LABELS } from "../data/domain";
+import { eventosApi } from "../services/api";
 import { ArrowLeft, CalendarDays, MapPin, Users, Upload, CheckCircle2, Info } from "lucide-react";
 
 export default function CrearEvento() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [imageName, setImageName] = useState("");
   const [form, setForm] = useState({
     titulo: "",
     descripcion: "",
@@ -17,14 +22,49 @@ export default function CrearEvento() {
     capacidad: "",
     requiereAprobacion: false,
     requiereInscripcion: true,
+    imagenUrl: "",
   });
 
   const handleChange = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleImageChange = async (file?: File) => {
+    if (!file) return;
+    setError("");
+    setImageName(file.name);
+
+    try {
+      const response = await eventosApi.simulateImageUpload(file);
+      handleChange("imagenUrl", response.imageUrl);
+    } catch {
+      setError("No se pudo simular la carga de imagen.");
+      setImageName("");
+    }
+  };
+
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      await eventosApi.create({
+        titulo: form.titulo,
+        descripcion: form.descripcion,
+        fecha: form.fecha,
+        horaInicio: form.horaInicio,
+        horaFin: form.horaFin,
+        lugar: form.lugar,
+        categoria: form.categoria,
+        capacidad: Number(form.capacidad),
+        imagenUrl: form.imagenUrl || undefined,
+      });
+      setSubmitted(true);
+    } catch {
+      setError("No se pudo crear el evento. Revisa los datos y confirma que el backend este activo.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -49,7 +89,7 @@ export default function CrearEvento() {
           <button onClick={() => navigate("/eventos")} className="px-6 py-2 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors text-sm">
             Ver todos los eventos
           </button>
-          <button onClick={() => { setSubmitted(false); setStep(1); setForm({ titulo: "", descripcion: "", fecha: "", horaInicio: "", horaFin: "", lugar: "", categoria: "", capacidad: "", requiereAprobacion: false, requiereInscripcion: true }); }} className="px-6 py-2 bg-[#39A900] hover:bg-[#2d8a00] text-white rounded-xl text-sm transition-colors">
+          <button onClick={() => { setSubmitted(false); setStep(1); setImageName(""); setForm({ titulo: "", descripcion: "", fecha: "", horaInicio: "", horaFin: "", lugar: "", categoria: "", capacidad: "", requiereAprobacion: false, requiereInscripcion: true, imagenUrl: "" }); }} className="px-6 py-2 bg-[#39A900] hover:bg-[#2d8a00] text-white rounded-xl text-sm transition-colors">
             Crear otro evento
           </button>
         </div>
@@ -85,6 +125,7 @@ export default function CrearEvento() {
 
       {/* Form card */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        {error && <div className="mb-4 bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm">{error}</div>}
         {step === 1 && (
           <div className="space-y-5">
             <h3 className="text-gray-800 font-semibold">Información básica del evento</h3>
@@ -127,14 +168,15 @@ export default function CrearEvento() {
               </select>
             </div>
 
-            {/* Image upload mock */}
+            {/* Image upload */}
             <div>
               <label className="block text-gray-700 text-sm mb-1.5">Imagen del evento</label>
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-[#39A900] transition-colors cursor-pointer">
+              <label className="block border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-[#39A900] transition-colors cursor-pointer">
                 <Upload size={28} className="text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Arrastra una imagen o haz clic para subir</p>
+                <p className="text-gray-500 text-sm">{imageName || "Haz clic para subir una imagen"}</p>
                 <p className="text-gray-400 text-xs mt-1">PNG, JPG hasta 5MB</p>
-              </div>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e.target.files?.[0])} />
+              </label>
             </div>
           </div>
         )}
@@ -181,13 +223,16 @@ export default function CrearEvento() {
               <label className="block text-gray-700 text-sm mb-1.5">Lugar / Sede *</label>
               <div className="relative">
                 <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
+                <select
                   value={form.lugar}
                   onChange={(e) => handleChange("lugar", e.target.value)}
-                  placeholder="Ej: Auditorio Principal - SENA Quindío"
-                  className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900]/30 focus:border-[#39A900] bg-gray-50 transition-all"
-                />
+                  className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#39A900]/30 focus:border-[#39A900] bg-gray-50 transition-all text-gray-700"
+                >
+                  <option value="">Selecciona una sede</option>
+                  {Object.entries(LOCACIONES_EVENTO_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -256,7 +301,7 @@ export default function CrearEvento() {
                 { label: "Categoría", value: form.categoria || "—" },
                 { label: "Fecha", value: form.fecha || "—" },
                 { label: "Horario", value: form.horaInicio && form.horaFin ? `${form.horaInicio} – ${form.horaFin}` : "—" },
-                { label: "Lugar", value: form.lugar || "—" },
+                { label: "Lugar", value: form.lugar ? LOCACIONES_EVENTO_LABELS[form.lugar as keyof typeof LOCACIONES_EVENTO_LABELS] : "—" },
                 { label: "Capacidad", value: form.capacidad ? `${form.capacidad} personas` : "—" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex justify-between text-sm">
@@ -295,9 +340,10 @@ export default function CrearEvento() {
         ) : (
           <button
             onClick={handleSubmit}
+            disabled={loading}
             className="flex items-center gap-2 px-6 py-2.5 bg-[#39A900] hover:bg-[#2d8a00] text-white rounded-xl font-medium transition-colors text-sm"
           >
-            <CheckCircle2 size={16} /> Crear Evento
+            <CheckCircle2 size={16} /> {loading ? "Creando..." : "Crear Evento"}
           </button>
         )}
       </div>

@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useApp } from "../../context/AppContext";
-import { Role } from "../../data/mockData";
+import { Role } from "../../data/domain";
 
 interface ProtectedRouteProps {
   allowedRoles?: Role[];

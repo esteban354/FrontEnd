@@ -10,13 +10,11 @@ import EventoDetalle from "./pages/EventoDetalle";
 import CrearEvento from "./pages/CrearEvento";
 import Bienestar from "./pages/Bienestar";
 import BienestarDetalle from "./pages/BienestarDetalle";
-import PAEDP from "./pages/PAEDP";
 import Carnet from "./pages/Carnet";
 import Asistencia from "./pages/Asistencia";
 import Inscripciones from "./pages/Inscripciones";
 import AdminPanel from "./pages/AdminPanel";
 import Reportes from "./pages/Reportes";
-import EscanearQR from "./pages/EscanearQR";
 import Aprendices from "./pages/Aprendices";
 import PreRegistro from "./pages/PreRegistro";
 import Perfil from "./pages/Perfil";
@@ -77,12 +75,10 @@ export const router = createBrowserRouter([
         ]
       },
 
-      // Rutas de PAEDP, Reportes, Configuración (Admin y Organizador)
+      // Rutas de Reportes y Configuracion (Admin y Organizador)
       {
         element: <ProtectedRoute allowedRoles={["admin", "organizador"]} />,
-        children: [
-          { path: "paedp", element: <PAEDP /> },
-          { path: "reportes", element: <Reportes /> },
+        children: [          { path: "reportes", element: <Reportes /> },
           { path: "configuracion", element: <Configuracion /> },
         ]
       },
@@ -91,9 +87,7 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={["aprendiz"]} />,
         children: [
-          { path: "carnet", element: <Carnet /> },
-          { path: "escanear-qr", element: <EscanearQR /> },
-          { path: "inscripciones", element: <Inscripciones /> },
+          { path: "carnet", element: <Carnet /> },          { path: "inscripciones", element: <Inscripciones /> },
         ]
       },
 

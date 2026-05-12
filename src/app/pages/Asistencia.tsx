@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { EVENTOS, APRENDICES_FICHA, ASISTENCIA_MOCK } from "../data/mockData";
+import { EVENTOS, APRENDICES_FICHA, ASISTENCIAS } from "../data/domain";
 import { CheckCircle2, XCircle, QrCode, Search, Download, Users, Clock, Filter } from "lucide-react";
 
 export default function Asistencia() {
-  const [selectedEvento, setSelectedEvento] = useState(EVENTOS[0].id);
+  const [selectedEvento, setSelectedEvento] = useState(EVENTOS[0]?.id ?? "");
   const [mode, setMode] = useState<"lista" | "qr">("lista");
   const [search, setSearch] = useState("");
   const [attendance, setAttendance] = useState<Record<string, boolean>>(
-    Object.fromEntries(ASISTENCIA_MOCK.map(a => [a.aprendizId, true]))
+    Object.fromEntries(ASISTENCIAS.map(a => [a.aprendizId, true]))
   );
   const [scanned, setScanned] = useState(false);
   const [scanName, setScanName] = useState("");
 
   const evento = EVENTOS.find(e => e.id === selectedEvento);
-  const approvedEvents = EVENTOS.filter(e => e.estado === "aprobado" || e.estado === "finalizado");
+  const approvedEvents = EVENTOS.filter(e => e.estado === "iniciado" || e.estado === "terminado");
 
   const filteredAprendices = APRENDICES_FICHA.filter(a =>
     a.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -23,12 +23,14 @@ export default function Asistencia() {
 
   const presentCount = Object.values(attendance).filter(Boolean).length;
   const totalAprendices = APRENDICES_FICHA.length;
+  const attendancePct = totalAprendices === 0 ? 0 : Math.round((presentCount / totalAprendices) * 100);
 
   const toggleAttendance = (id: string) => {
     setAttendance(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleScan = () => {
+    if (APRENDICES_FICHA.length === 0) return;
     const aprendiz = APRENDICES_FICHA[Math.floor(Math.random() * APRENDICES_FICHA.length)];
     setScanName(aprendiz.nombre);
     setScanned(true);
@@ -92,12 +94,12 @@ export default function Asistencia() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-700 text-sm font-medium">Progreso de asistencia</span>
-            <span className="text-gray-500 text-sm">{Math.round((presentCount / totalAprendices) * 100)}%</span>
+            <span className="text-gray-500 text-sm">{attendancePct}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-3">
             <div
               className="h-3 rounded-full bg-gradient-to-r from-[#39A900] to-[#7dd956] transition-all duration-500"
-              style={{ width: `${(presentCount / totalAprendices) * 100}%` }}
+              style={{ width: `${attendancePct}%` }}
             ></div>
           </div>
           <div className="flex justify-between mt-2">
@@ -201,7 +203,7 @@ export default function Asistencia() {
             <p className="text-gray-500 text-sm mt-1">Apunta la cámara al QR del carnet del aprendiz para registrar su asistencia</p>
           </div>
 
-          {/* Scanner mock */}
+          {/* Scanner */}
           <div className="relative w-64 h-64 bg-gray-900 rounded-2xl overflow-hidden flex items-center justify-center">
             <div className="absolute inset-4 border-2 border-[#39A900] rounded-lg">
               <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#39A900] rounded-tl-lg -translate-x-0.5 -translate-y-0.5"></div>
