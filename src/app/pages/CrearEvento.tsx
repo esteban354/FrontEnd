@@ -45,6 +45,32 @@ export default function CrearEvento() {
 
   const handleSubmit = async () => {
     setError("");
+    
+    if (!form.titulo || !form.descripcion || !form.fecha || !form.horaInicio || !form.horaFin || !form.lugar || !form.categoria || !form.capacidad) {
+      setError("Por favor completa todos los campos obligatorios.");
+      return;
+    }
+    
+    if (Number(form.capacidad) < 1) {
+      setError("La capacidad debe ser mayor a 0.");
+      return;
+    }
+
+    if (form.horaInicio >= form.horaFin) {
+      setError("La hora final debe ser posterior a la inicial.");
+      return;
+    }
+
+    const anio = new Date(form.fecha).getFullYear();
+    if (anio < 2026) {
+      setError("El año del evento debe ser 2026 o posterior.");
+      return;
+    }
+    if (anio > 9999) {
+      setError("El año del evento no puede tener más de 4 dígitos.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -60,8 +86,8 @@ export default function CrearEvento() {
         imagenUrl: form.imagenUrl || undefined,
       });
       setSubmitted(true);
-    } catch {
-      setError("No se pudo crear el evento. Revisa los datos y confirma que el backend este activo.");
+    } catch (err: any) {
+      setError(err.message || "No se pudo crear el evento. Revisa los datos y confirma que el backend este activo.");
     } finally {
       setLoading(false);
     }

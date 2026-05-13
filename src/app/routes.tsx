@@ -8,8 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Eventos from "./pages/Eventos";
 import EventoDetalle from "./pages/EventoDetalle";
 import CrearEvento from "./pages/CrearEvento";
-import Bienestar from "./pages/Bienestar";
-import BienestarDetalle from "./pages/BienestarDetalle";
+import Calendario from "./pages/Calendario";
 import Carnet from "./pages/Carnet";
 import Asistencia from "./pages/Asistencia";
 import Inscripciones from "./pages/Inscripciones";
@@ -53,6 +52,7 @@ export const router = createBrowserRouter([
           { path: "dashboard", element: <Dashboard /> },
           { path: "eventos", element: <Eventos /> },
           { path: "eventos/:id", element: <EventoDetalle /> },
+          { path: "calendario", element: <Calendario /> },
           { path: "perfil", element: <Perfil /> },
           { path: "notificaciones", element: <Notificaciones /> },
         ]
@@ -63,15 +63,6 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute allowedRoles={["admin", "organizador"]} />,
         children: [
           { path: "eventos/crear", element: <CrearEvento /> },
-        ]
-      },
-
-      // Rutas de Bienestar (Admin, Organizador, Aprendiz)
-      {
-        element: <ProtectedRoute allowedRoles={["admin", "organizador", "aprendiz"]} />,
-        children: [
-          { path: "bienestar", element: <Bienestar /> },
-          { path: "bienestar/:id", element: <BienestarDetalle /> },
         ]
       },
 

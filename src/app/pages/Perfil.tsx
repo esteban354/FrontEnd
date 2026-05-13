@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { Camera, Mail, Shield, User as UserIcon, Lock, Save, BookOpen } from "lucide-react";
+import { Camera, Mail, Shield, User as UserIcon, Lock, Save, BookOpen, X, Loader2 } from "lucide-react";
+import { authApi } from "../services/api";
 
 export default function Perfil() {
   const { currentUser } = useApp();
@@ -12,7 +13,50 @@ export default function Perfil() {
     documento: currentUser?.documento || "",
   });
 
+  // Password Modal State
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [pwdForm, setPwdForm] = useState({ actual: "", nueva: "", confirmar: "" });
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState("");
+  const [pwdSuccess, setPwdSuccess] = useState("");
+
   if (!currentUser) return null;
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdError("");
+    setPwdSuccess("");
+
+    if (!pwdForm.actual || !pwdForm.nueva || !pwdForm.confirmar) {
+      setPwdError("Todos los campos son obligatorios.");
+      return;
+    }
+
+    if (pwdForm.nueva.length < 6) {
+      setPwdError("La nueva contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
+    if (pwdForm.nueva !== pwdForm.confirmar) {
+      setPwdError("La confirmación no coincide con la nueva contraseña.");
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      await authApi.cambiarPassword(pwdForm.actual, pwdForm.nueva);
+      setPwdSuccess("Contraseña actualizada exitosamente.");
+      setTimeout(() => {
+        setShowPwdModal(false);
+        setPwdForm({ actual: "", nueva: "", confirmar: "" });
+        setPwdSuccess("");
+      }, 2000);
+    } catch (err: any) {
+      setPwdError(err.message || "Error al cambiar la contraseña.");
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -29,7 +73,9 @@ export default function Perfil() {
                       {currentUser.avatar}
                     </div>
                   ) : (
-                    <UserIcon size={40} className="text-gray-400" />
+                    <div className="w-full h-full bg-[#39A900] text-white flex items-center justify-center text-3xl font-bold">
+                      {currentUser.nombre[0]}{currentUser.apellido[0]}
+                    </div>
                   )}
                 </div>
               </div>
@@ -84,7 +130,7 @@ export default function Perfil() {
             </h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Nombre</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Nombres</label>
                 <input
                   type="text"
                   disabled={!isEditing}
@@ -94,7 +140,7 @@ export default function Perfil() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Apellido</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Apellidos</label>
                 <input
                   type="text"
                   disabled={!isEditing}
@@ -120,10 +166,9 @@ export default function Perfil() {
                 <label className="block text-xs font-medium text-gray-500 mb-1">Documento de Identidad</label>
                 <input
                   type="text"
-                  disabled={!isEditing}
+                  disabled
                   value={formData.documento}
-                  onChange={(e) => setFormData({...formData, documento: e.target.value})}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 disabled:opacity-70 disabled:cursor-not-allowed focus:ring-2 focus:ring-[#39A900]/30 focus:border-[#39A900] outline-none transition-all"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
                 />
               </div>
               {currentUser.programa && (
@@ -155,7 +200,10 @@ export default function Perfil() {
               <p className="text-sm text-gray-500">
                 Mantén tu cuenta segura actualizando tu contraseña regularmente.
               </p>
-              <button className="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+              <button 
+                onClick={() => setShowPwdModal(true)}
+                className="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-700 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+              >
                 <Lock size={16} />
                 Cambiar contraseña
               </button>
@@ -165,7 +213,7 @@ export default function Perfil() {
           <div className="bg-gradient-to-br from-[#f0f9e8] to-[#e8f5e2] rounded-2xl border border-[#39A900]/20 p-6">
             <h3 className="font-semibold text-[#2d8a00] mb-2">¿Necesitas ayuda?</h3>
             <p className="text-sm text-[#39A900]/80 mb-4">
-              Si tienes problemas con tu cuenta, contacta al administrador de bienestar de tu centro.
+              Si tienes problemas con tu cuenta, contacta al administrador de tu centro.
             </p>
             <button className="text-[#2d8a00] text-sm font-medium hover:underline">
               Soporte Técnico →
@@ -173,6 +221,84 @@ export default function Perfil() {
           </div>
         </div>
       </div>
+
+      {/* Modal Cambiar Contraseña */}
+      {showPwdModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="font-bold text-gray-800">Cambiar Contraseña</h3>
+              <button onClick={() => setShowPwdModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleChangePassword} className="p-5 space-y-4">
+              {pwdError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                  {pwdError}
+                </div>
+              )}
+              {pwdSuccess && (
+                <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                  {pwdSuccess}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Contraseña Actual *</label>
+                <input
+                  type="password"
+                  value={pwdForm.actual}
+                  onChange={(e) => setPwdForm({ ...pwdForm, actual: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#39A900]/30 outline-none"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Nueva Contraseña *</label>
+                <input
+                  type="password"
+                  value={pwdForm.nueva}
+                  onChange={(e) => setPwdForm({ ...pwdForm, nueva: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#39A900]/30 outline-none"
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Confirmar Nueva Contraseña *</label>
+                <input
+                  type="password"
+                  value={pwdForm.confirmar}
+                  onChange={(e) => setPwdForm({ ...pwdForm, confirmar: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#39A900]/30 outline-none"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <div className="pt-3 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPwdModal(false)}
+                  className="flex-1 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={pwdLoading}
+                  className="flex-1 py-2 bg-[#39A900] text-white rounded-lg text-sm font-medium hover:bg-[#2d8a00] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
+                >
+                  {pwdLoading && <Loader2 size={16} className="animate-spin" />}
+                  {pwdLoading ? "Guardando..." : "Actualizar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

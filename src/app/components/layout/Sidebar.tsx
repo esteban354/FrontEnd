@@ -2,10 +2,9 @@ import { NavLink, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   CalendarDays,
+  Calendar,
   PlusCircle,
-  Users,
   ClipboardList,
-  Heart,
   BarChart3,
   Settings,
   CreditCard,
@@ -27,28 +26,16 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
-  { label: "Calendario", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
+  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "estudiante"] },
+  { label: "Eventos", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "estudiante"] },
+  { label: "Calendario", path: "/calendario", icon: <Calendar size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz", "estudiante"] },
   { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
-  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz"] },
-  { label: "Mi Carnet", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },  { label: "Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
-  { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
-  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
-  { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
-  { label: "Mis Aprendices", path: "/aprendices", icon: <Users size={18} />, roles: [] }, // Deduped
-  { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
-];
-
-// Deduplicated and ordered nav
-const DEDUPLICATED_NAV: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
-  { label: "Calendario de Eventos", path: "/eventos", icon: <CalendarDays size={18} />, roles: ["admin", "organizador", "instructor", "aprendiz"] },
-  { label: "Crear Evento", path: "/eventos/crear", icon: <PlusCircle size={18} />, roles: ["admin", "organizador"] },
-  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz"] },
-  { label: "Mi Carnet Digital", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz"] },  { label: "Control Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
+  { label: "Mis Inscripciones", path: "/inscripciones", icon: <BookOpen size={18} />, roles: ["aprendiz", "estudiante"] },
+  { label: "Mi Carnet Digital", path: "/carnet", icon: <CreditCard size={18} />, roles: ["aprendiz", "estudiante"] },
+  { label: "Control Asistencia", path: "/asistencia", icon: <CheckSquare size={18} />, roles: ["instructor", "admin"] },
   { label: "Aprendices", path: "/aprendices", icon: <UserCheck size={18} />, roles: ["instructor", "admin"] },
   { label: "Pre-registro", path: "/pre-registro", icon: <ClipboardList size={18} />, roles: ["instructor"] },
-  { label: "Bienestar", path: "/bienestar", icon: <Heart size={18} />, roles: ["admin", "organizador", "aprendiz"] },  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
+  { label: "Reportes", path: "/reportes", icon: <BarChart3 size={18} />, roles: ["admin", "organizador"] },
   { label: "Panel Admin", path: "/admin", icon: <Settings size={18} />, roles: ["admin"] },
   { label: "Configuración", path: "/configuracion", icon: <Settings size={18} />, roles: ["admin"] },
 ];
@@ -57,14 +44,16 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
   organizador: "Organizador",
   instructor: "Instructor",
-  aprendiz: "Aprendiz",};
+  aprendiz: "Aprendiz",
+  estudiante: "Estudiante",
+};
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "bg-[#d4183d]",
   organizador: "bg-[#007AC0]",
   instructor: "bg-[#7c3aed]",
   aprendiz: "bg-[#39A900]",
-  general: "bg-[#f59e0b]",
+  estudiante: "bg-[#39A900]",
 };
 
 export function Sidebar() {
@@ -72,7 +61,7 @@ export function Sidebar() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
-  const visibleNav = DEDUPLICATED_NAV.filter(
+  const visibleNav = NAV_ITEMS.filter(
     (item) => currentUser && item.roles.includes(currentUser.role)
   );
 
@@ -113,20 +102,20 @@ export function Sidebar() {
         <div className={`p-3 border-b border-white/10 ${collapsed ? "flex justify-center" : ""}`}>
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 ${ROLE_COLORS[currentUser.role]}`}>
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0 ${ROLE_COLORS[currentUser.role] ?? "bg-gray-500"}`}>
                 {currentUser.nombre[0]}{currentUser.apellido[0]}
               </div>
               <div className="min-w-0">
                 <div className="text-white text-sm font-medium truncate">
                   {currentUser.nombre} {currentUser.apellido}
                 </div>
-                <span className={`inline-block text-white text-xs px-2 py-0.5 rounded-full mt-0.5 ${ROLE_COLORS[currentUser.role]}`}>
-                  {ROLE_LABELS[currentUser.role]}
+                <span className={`inline-block text-white text-xs px-2 py-0.5 rounded-full mt-0.5 ${ROLE_COLORS[currentUser.role] ?? "bg-gray-500"}`}>
+                  {ROLE_LABELS[currentUser.role] ?? currentUser.role}
                 </span>
               </div>
             </div>
           ) : (
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${ROLE_COLORS[currentUser.role]}`}>
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold ${ROLE_COLORS[currentUser.role] ?? "bg-gray-500"}`}>
               {currentUser.nombre[0]}{currentUser.apellido[0]}
             </div>
           )}
@@ -137,10 +126,11 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto py-3 px-2">
         {visibleNav.map((item) => (
           <NavLink
-            key={item.path}
+            key={item.path + item.label}
             to={item.path}
+            end={item.path === "/eventos"}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-150 group
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-150
               ${isActive
                 ? "bg-[#39A900] text-white"
                 : "text-white/70 hover:bg-white/10 hover:text-white"

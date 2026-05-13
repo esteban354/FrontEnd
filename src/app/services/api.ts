@@ -27,8 +27,16 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Error HTTP ${response.status}`);
+    let message = `Error HTTP ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.message) {
+        message = errorData.message;
+      }
+    } catch {
+      message = await response.text() || message;
+    }
+    throw new Error(message);
   }
 
   if (response.status === 204) {
@@ -52,8 +60,16 @@ export async function uploadRequest<T>(path: string, file: File): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Error HTTP ${response.status}`);
+    let message = `Error HTTP ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.message) {
+        message = errorData.message;
+      }
+    } catch {
+      message = await response.text() || message;
+    }
+    throw new Error(message);
   }
 
   return response.json() as Promise<T>;
@@ -67,6 +83,20 @@ export const authApi = {
       token: null,
     }),
   me: () => apiRequest<User>("/auth/me"),
+  cambiarPassword: (passwordActual: string, passwordNueva: string) =>
+    apiRequest<void>("/auth/cambiar-password", {
+      method: "PUT",
+      body: { passwordActual, passwordNueva },
+    }),
+};
+
+export const usersApi = {
+  findAll: (rol?: string) => apiRequest<User[]>(rol ? `/users?rol=${rol}` : "/users"),
+  create: (usuario: { nombres: string; apellidos: string; documento: string; email?: string; rol?: string; fichaId?: number }) =>
+    apiRequest<User>("/users", {
+      method: "POST",
+      body: usuario,
+    }),
 };
 
 export interface ImagenUploadResponse {
